@@ -1,0 +1,23 @@
+version: '3.3'
+services:
+  config:
+    build:
+      context: ./config
+      dockerfile: Dockerfile-dev
+    ports:
+      - "8000:8000"
+    command: uvicorn main:app --host 0.0.0.0 --reload
+    volumes:
+      - ./config:/usr/src/config
+
+
+  scanner:
+    build:
+      context: ./scanner
+      dockerfile: Dockerfile-dev
+    ports:
+      - "8001:8000"
+    command: uvicorn main:app --host 0.0.0.0 --reload
+    volumes:
+      - ./scanner:/usr/src/scanner
+    env_file: .env
