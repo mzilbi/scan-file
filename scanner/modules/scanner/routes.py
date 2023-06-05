@@ -1,12 +1,13 @@
 from fastapi import APIRouter, status, HTTPException, Depends, UploadFile
+import time
 from .scanner import is_blacklist_in_file
 
 router = APIRouter()
 
 
-async def upload_file_scan(upload_file: UploadFile):
+async def scan_upload_file(upload_file: UploadFile):
     try:
-        return "detected" if await is_blacklist_in_file(upload_file.file) else "clean"
+        return await is_blacklist_in_file(upload_file.file) 
     except Exception as e:
         print(f"Error: {e}")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
@@ -14,8 +15,8 @@ async def upload_file_scan(upload_file: UploadFile):
     
 @router.post("/", status_code=status.HTTP_200_OK, response_model=str)
 async def post(
-    result: str = Depends(upload_file_scan)
+    id_detected_file: str = Depends(scan_upload_file)
 ):
-    return result
+    return "detected" if id_detected_file else "clean"
 
     
